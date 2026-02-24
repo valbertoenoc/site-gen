@@ -6,20 +6,14 @@ from md_converter import (
     split_nodes_delimiter,
     split_nodes_images,
     split_nodes_links,
+    text_to_textnodes,
 )
 from textnode import TextNode, TextType
 
 
 class TestMDConverter(unittest.TestCase):
-    def test_text_plain(self):
-        node = TextNode("This is a plain text", TextType.TEXT_PLAIN)
-        nodes = split_nodes_delimiter([node], " ", TextType.TEXT_PLAIN)
-        self.assertListEqual(
-            nodes, [TextNode("This is a plain text", TextType.TEXT_PLAIN)]
-        )
-
     def test_text_bold(self):
-        node = TextNode("This is a text with a **bold** word", TextType.TEXT_BOLD)
+        node = TextNode("This is a text with a **bold** word", TextType.TEXT_PLAIN)
         nodes = split_nodes_delimiter([node], "**", TextType.TEXT_BOLD)
         self.assertListEqual(
             nodes,
@@ -31,7 +25,7 @@ class TestMDConverter(unittest.TestCase):
         )
 
     def test_text_italic(self):
-        node = TextNode("This is a text with an _italic_ word", TextType.TEXT_ITALIC)
+        node = TextNode("This is a text with an _italic_ word", TextType.TEXT_PLAIN)
         nodes = split_nodes_delimiter([node], "_", TextType.TEXT_ITALIC)
         self.assertListEqual(
             nodes,
@@ -43,7 +37,7 @@ class TestMDConverter(unittest.TestCase):
         )
 
     def test_text_code(self):
-        node = TextNode("This is a text with a `code` block", TextType.TEXT_CODE)
+        node = TextNode("This is a text with a `code` block", TextType.TEXT_PLAIN)
         nodes = split_nodes_delimiter([node], "`", TextType.TEXT_CODE)
         self.assertListEqual(
             nodes,
@@ -69,7 +63,7 @@ class TestMDConverter(unittest.TestCase):
 
     def test_multiple_text_bold(self):
         node = TextNode(
-            "This is a text with **two** **bold** words", TextType.TEXT_BOLD
+            "This is a text with **two** **bold** words", TextType.TEXT_PLAIN
         )
         nodes = split_nodes_delimiter([node], "**", TextType.TEXT_BOLD)
         self.assertListEqual(
@@ -126,6 +120,28 @@ class TestMDConverter(unittest.TestCase):
                 TextNode(
                     "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
                 ),
+            ],
+        )
+
+    def test_text_to_textnode(self):
+        text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        new_nodes = text_to_textnodes(text)
+
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("This is ", TextType.TEXT_PLAIN),
+                TextNode("text", TextType.TEXT_BOLD),
+                TextNode(" with an ", TextType.TEXT_PLAIN),
+                TextNode("italic", TextType.TEXT_ITALIC),
+                TextNode(" word and a ", TextType.TEXT_PLAIN),
+                TextNode("code block", TextType.TEXT_CODE),
+                TextNode(" and an ", TextType.TEXT_PLAIN),
+                TextNode(
+                    "obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
+                ),
+                TextNode(" and a ", TextType.TEXT_PLAIN),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
             ],
         )
 
