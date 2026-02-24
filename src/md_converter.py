@@ -38,5 +38,83 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
     return new_nodes
 
 
-def extract_markdown_links_and_images(text):
+def extract_markdown_links(text):
     return re.findall(r"\[(.*?)\]\((.*?)\)", text)
+
+
+def extract_markdown_images(text):
+    return re.findall(r"\!\[(.*?)\]\((.*?)\)", text)
+
+
+def split_nodes_images(old_nodes):
+    new_nodes = []
+    for old in old_nodes:
+        matches = extract_markdown_images(old.text)
+
+        if not matches:
+            new_nodes.append(old)
+            continue
+
+        remaining_text = old.text
+        for m in matches:
+            alt, url = m
+            split_text = remaining_text.split(f"![{alt}]({url})", 1)
+
+            if len(split_text) == 1:
+                new_nodes.append(TextNode(old.text, TextType.TEXT_PLAIN))
+                continue
+
+            new_nodes.extend(
+                [
+                    TextNode(split_text[0], TextType.TEXT_PLAIN),
+                    TextNode(alt, TextType.IMAGE, url),
+                ]
+            )
+
+            remaining_text = split_text[-1]
+
+        if remaining_text:
+            new_nodes.append(TextNode(remaining_text, TextType.TEXT_PLAIN))
+
+    return new_nodes
+
+
+def split_nodes_links(old_nodes):
+    new_nodes = []
+    for old in old_nodes:
+        matches = extract_markdown_links(old.text)
+
+        if not matches:
+            new_nodes.append(old)
+            continue
+
+        remaining_text = old.text
+        for m in matches:
+            alt, url = m
+            split_text = remaining_text.split(f"[{alt}]({url})", 1)
+
+            if len(split_text) == 1:
+                new_nodes.append(TextNode(old.text, TextType.TEXT_PLAIN))
+                continue
+
+            new_nodes.extend(
+                [
+                    TextNode(split_text[0], TextType.TEXT_PLAIN),
+                    TextNode(alt, TextType.LINK, url),
+                ]
+            )
+
+            remaining_text = split_text[-1]
+
+        if remaining_text:
+            new_nodes.append(TextNode(remaining_text, TextType.TEXT_PLAIN))
+
+    return new_nodes
+
+
+node = TextNode(
+    "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+    TextType.TEXT_PLAIN,
+)
+new_nodes = split_nodes_links([node])
+print(new_nodes)

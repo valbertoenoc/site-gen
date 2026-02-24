@@ -1,6 +1,12 @@
 import unittest
 
-from md_converter import extract_markdown_links_and_images, split_nodes_delimiter
+from md_converter import (
+    extract_markdown_images,
+    extract_markdown_links,
+    split_nodes_delimiter,
+    split_nodes_images,
+    split_nodes_links,
+)
 from textnode import TextNode, TextType
 
 
@@ -77,11 +83,57 @@ class TestMDConverter(unittest.TestCase):
             ],
         )
 
+    def test_split_image(self):
+        node = TextNode(
+            "This is text with an image ![bootdev logo](https://i.imgur.com/aKaOqIh.gif) and ![sonic img](https://i.imgur.com/aKaOqIh.gif)",
+            TextType.TEXT_PLAIN,
+        )
+        new_nodes = split_nodes_images([node])
+
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("This is text with an image ", TextType.TEXT_PLAIN),
+                TextNode(
+                    "bootdev logo",
+                    TextType.IMAGE,
+                    "https://i.imgur.com/aKaOqIh.gif",
+                ),
+                TextNode(" and ", TextType.TEXT_PLAIN),
+                TextNode(
+                    "sonic img", TextType.IMAGE, "https://i.imgur.com/aKaOqIh.gif"
+                ),
+            ],
+        )
+
+    def test_split_links(self):
+        node = TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.TEXT_PLAIN,
+        )
+        new_nodes = split_nodes_links([node])
+
+        self.assertListEqual(
+            new_nodes,
+            [
+                TextNode("This is text with a link ", TextType.TEXT_PLAIN),
+                TextNode(
+                    "to boot dev",
+                    TextType.LINK,
+                    "https://www.boot.dev",
+                ),
+                TextNode(" and ", TextType.TEXT_PLAIN),
+                TextNode(
+                    "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+                ),
+            ],
+        )
+
 
 class TestLinkImageExtractor(unittest.TestCase):
     def test_link_extractor(self):
         text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
-        links = extract_markdown_links_and_images(text)
+        links = extract_markdown_links(text)
         self.assertEqual(
             links,
             [
@@ -92,7 +144,7 @@ class TestLinkImageExtractor(unittest.TestCase):
 
     def test_image_extractor(self):
         text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
-        images = extract_markdown_links_and_images(text)
+        images = extract_markdown_images(text)
         self.assertListEqual(
             images,
             [
