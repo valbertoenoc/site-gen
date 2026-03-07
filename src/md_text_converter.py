@@ -1,5 +1,6 @@
 import re
-from textnode import TextNode, TextType
+
+from .textnode import TextNode, TextType
 
 text_type_delimiter_map = {
     TextType.TEXT_PLAIN: " ",
