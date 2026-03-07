@@ -109,9 +109,6 @@ def split_nodes_links(old_nodes):
     return new_nodes
 
 
-text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
-
-
 def text_to_textnodes(text):
     node = TextNode(text, TextType.TEXT_PLAIN)
     new_nodes = split_nodes_delimiter([node], "**", TextType.TEXT_BOLD)

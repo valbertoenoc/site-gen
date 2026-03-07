@@ -49,6 +49,7 @@ class TestTextNode(unittest.TestCase):
     def test_link(self):
         node = TextNode("google", TextType.LINK, "https://www.google.com")
         html_node = text_node_to_html_node(node)
+        assert html_node is not None
         self.assertEqual(html_node.tag, "a")
         self.assertEqual(html_node.value, "google")
         self.assertEqual(html_node.props.get("href"), "https://www.google.com")

@@ -12,6 +12,15 @@ class TextType(Enum):
     IMAGE = "image"
 
 
+class BlockType(Enum):
+    BLOCK_PARAGRAPH = "block_paragraph"
+    BLOCK_HEADING = "block_heading"
+    BLOCK_CODE = "block_code"
+    BLOCK_QUOTE = "block_quote"
+    BLOCK_UNORDERED_LIST = "block_unordered_list"
+    BLOCK_ORDERED_LIST = "block_ordered_list"
+
+
 class TextNode:
     def __init__(self, text: str, text_type: TextType, url=None) -> None:
         self.text = text
@@ -19,6 +28,8 @@ class TextNode:
         self.url = url
 
     def __eq__(self, value: object, /) -> bool:
+        if not isinstance(value, TextNode):
+            raise NotImplementedError
         return (
             self.text == value.text
             and self.text_type == value.text_type
@@ -30,7 +41,7 @@ class TextNode:
 
 
 # --- Methods --- #
-def text_node_to_html_node(text_node):
+def text_node_to_html_node(text_node) -> LeafNode:
     match text_node.text_type:
         case TextType.TEXT_PLAIN:
             return LeafNode(tag=None, value=text_node.text)
