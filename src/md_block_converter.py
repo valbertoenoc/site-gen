@@ -10,26 +10,6 @@ def markdown_to_blocks(markdown):
     return filtered
 
 
-def is_unordered_list(md_block):
-    lines = md_block.split("\n")
-    print("---------")
-    for line in lines:
-        print(line)
-        if not re.findall(r"^[\-\*\+]\.\s.*$", line):
-            return False
-    return True
-
-
-def is_ordered_list(md_block):
-    lines = md_block.split("\n")
-    print("---------")
-    for line in lines:
-        print(line)
-        if not re.findall(r"^\d+\.\s.*$", line):
-            return False
-    return True
-
-
 def block_to_block_type(md_block):
     if re.findall(r"^#{1,6}\s+.+", md_block):
         return BlockType.BLOCK_HEADING
