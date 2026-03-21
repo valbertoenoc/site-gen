@@ -51,7 +51,7 @@ def text_to_children(text_block: str) -> list[HTMLNode]:
     return html_nodes
 
 
-def text_to_html_ordered_item_list(text_block: str) -> list[HTMLNode]:
+def text_to_html_unordered_item_list(text_block: str) -> list[HTMLNode]:
     lines = text_block.splitlines()
     list_nodes = []
     for line in lines:
@@ -67,7 +67,7 @@ def text_to_html_ordered_item_list(text_block: str) -> list[HTMLNode]:
     return list_nodes
 
 
-def text_to_html_unordered_item_list(text_block: str) -> list[HTMLNode]:
+def text_to_html_ordered_item_list(text_block: str) -> list[HTMLNode]:
     lines = text_block.splitlines()
     list_nodes = []
     for line in lines:
@@ -81,7 +81,7 @@ def text_to_html_unordered_item_list(text_block: str) -> list[HTMLNode]:
 
 def strip_quotes_by_line(text_block: str) -> str:
     lines = text_block.splitlines()
-    stripped_lines = list(map(lambda x: x.lstrip(">"), lines))
+    stripped_lines = list(map(lambda x: x.lstrip("> "), lines))
     stripped_block = "\n".join(stripped_lines)
     return stripped_block
 
@@ -101,7 +101,7 @@ def extract_title(markdown: str) -> str:
             continue
 
         line_split = line.split()
-        title = line_split[-1]
+        title = " ".join(line_split[1:])
         return title
 
     raise ValueError("No title found")
