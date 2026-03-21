@@ -92,3 +92,16 @@ def strip_backticks_by_line(text_block: str) -> HTMLNode:
     code_node = TextNode(text=content, text_type=TextType.TEXT_CODE)
     html_code_node = text_node_to_html_node(code_node)
     return html_code_node
+
+
+def extract_title(markdown: str) -> str:
+    lines = markdown.splitlines()
+    for line in lines:
+        if not line.startswith("# "):
+            continue
+
+        line_split = line.split()
+        title = line_split[-1]
+        return title
+
+    raise ValueError("No title found")

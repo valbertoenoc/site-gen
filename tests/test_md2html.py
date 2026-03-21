@@ -1,5 +1,5 @@
 import unittest
-from src.md2html import markdown_to_html_node
+from src.md2html import extract_title, markdown_to_html_node
 
 
 class TestMD2HTMLConverter(unittest.TestCase):
@@ -34,3 +34,22 @@ the **same** even with inline stuff
             html,
             "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
         )
+
+    def test_extract_title(self):
+        md = """
+regular text
+
+# title1
+
+normal paragraph
+
+"""
+        title = extract_title(md)
+        self.assertEqual(title, "title1")
+
+    def test_extract_title_not_found(self):
+        md = """
+title1
+"""
+        with self.assertRaises(ValueError):
+            extract_title(md)
