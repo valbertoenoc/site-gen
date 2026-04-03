@@ -27,8 +27,8 @@ def generate_page(from_path, template_path, dst_path, basepath):
 
     template_data = template_data.replace("{{ Title }}", page_title)
     template_data = template_data.replace("{{ Content }}", html_data)
-    # template_data = template_data.replace('href="/', f'href="{basepath}')
-    # template_data = template_data.replace('src="/', f'src="{basepath}')
+    template_data = template_data.replace('href="/', f'href="{basepath}')
+    template_data = template_data.replace('src="/', f'src="{basepath}')
 
     if not os.path.exists(dst_path):
         # print(f"Destination directory does not exist. Creating: {dst_path}")
