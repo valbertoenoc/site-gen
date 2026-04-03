@@ -1,4 +1,5 @@
-import os, shutil
+import os, sys
+import shutil
 from pathlib import Path
 
 from src.md2html import extract_title, markdown_to_html_node
@@ -10,7 +11,7 @@ def convert_root_to_dst_dir(input_path, dst_path):
     return Path(*input_parts)
 
 
-def generate_page(from_path, template_path, dst_path):
+def generate_page(from_path, template_path, dst_path, basepath):
     print(f"generating page from {from_path} to {dst_path} using {template_path}")
 
     with open(from_path, "r") as f:
@@ -25,6 +26,8 @@ def generate_page(from_path, template_path, dst_path):
 
     template_data = template_data.replace("{{ Title }}", page_title)
     template_data = template_data.replace("{{ Content }}", html_data)
+    template_data = template_data.replace('href="/', f'href="{basepath}')
+    template_data = template_data.replace('src="/', f'src="{basepath}')
 
     if not os.path.exists(dst_path):
         # print(f"Destination directory does not exist. Creating: {dst_path}")
@@ -34,7 +37,7 @@ def generate_page(from_path, template_path, dst_path):
         f.write(template_data)
 
 
-def generate_page_recursive(dir_path_content, template_path, dst_dir_path):
+def generate_page_recursive(dir_path_content, template_path, dst_dir_path, basepath):
     print(
         f"generating page from {dir_path_content} to {dst_dir_path} using {template_path}"
     )
@@ -55,7 +58,7 @@ def generate_page_recursive(dir_path_content, template_path, dst_dir_path):
             # print("html_dst_fullpath", html_dst_fullpath)
 
             # full md content to public html
-            generate_page(md_fullpath, template_path, html_dst_fullpath)
+            generate_page(md_fullpath, template_path, html_dst_fullpath, basepath)
 
 
 def rm_dir_content(path: str):
@@ -72,15 +75,20 @@ def copy_dir_content(src: str, dst: str):
 
 
 def main():
+    basepath = "/"
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
+    print("basepath:", basepath)
+
     # remove public/ dir
     rm_dir_content("public/")
     # copy content from src to dst
     copy_dir_content("static/", "public/")
     # # generate page and write to dst path
-    # generate_page("content/index.md", "template.html", "public/index.html")
+    # generate_page("content/index.md", "template.html", "public/index.html", basepath)
 
     # generate page and write to dst path recursively
-    generate_page_recursive("content", "template.html", "public")
+    generate_page_recursive("content", "template.html", "public", basepath)
 
 
 if __name__ == "__main__":
