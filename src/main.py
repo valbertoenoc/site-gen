@@ -80,15 +80,15 @@ def main():
         basepath = sys.argv[1]
     print("basepath:", basepath)
 
-    # remove public/ dir
-    rm_dir_content("public/")
+    # remove docs/ dir
+    rm_dir_content("docs/")
     # copy content from src to dst
-    copy_dir_content("static/", "public/")
+    copy_dir_content("static/", "docs/")
     # # generate page and write to dst path
-    # generate_page("content/index.md", "template.html", "public/index.html", basepath)
+    # generate_page("content/index.md", "template.html", "docs/index.html", basepath)
 
     # generate page and write to dst path recursively
-    generate_page_recursive("content", "template.html", "public", basepath)
+    generate_page_recursive("content", "template.html", "docs", basepath)
 
 
 if __name__ == "__main__":
